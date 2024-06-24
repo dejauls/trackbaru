@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 
 client = MongoClient('mongodb://belajar:belajar@ac-pewhlve-shard-00-00.m1k88nt.mongodb.net:27017,ac-pewhlve-shard-00-01.m1k88nt.mongodb.net:27017,ac-pewhlve-shard-00-02.m1k88nt.mongodb.net:27017/?ssl=true&replicaSet=atlas-i3tctf-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0')
 db = client.linkc
@@ -9,14 +10,17 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('link.html')
+
 @app.route("/link", methods=["POST"])
 def link_post():
     try:
         instagram_receive = request.form['instagram_give']
         print(f"Received data: {instagram_receive}")  # Debug: Print received data
         
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Get current timestamp
         doc = {
-            'instagram': instagram_receive
+            'instagram': instagram_receive,
+            'timestamp': current_time  # Add timestamp to the document
         }
 
         result = db.link.insert_one(doc)
