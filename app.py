@@ -15,12 +15,12 @@ def home():
 def link_post():
     try:
         instagram_receive = request.form['instagram_give']
-        print(f"Received data: {instagram_receive}")  # Debug: Print received data
+        print(f"Received data: {instagram_receive}") 
         
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Get current timestamp
+        current_time = datetime.now().strftime('%Y-%m-%d')  
         doc = {
             'instagram': instagram_receive,
-            'timestamp': current_time  # Add timestamp to the document
+            'timestamp': current_time  
         }
 
         result = db.link.insert_one(doc)
