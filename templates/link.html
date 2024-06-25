@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RECLEA BRICK</title>
-    <link rel="icon" href="reclea14.png" type="image/x-icon" />
+    <link rel="icon" href="/static/reclea14.png" type="image/x-icon" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -70,7 +70,7 @@
         <div id="stars3"></div>
     </section>
     <a id="profilePicture" href="">
-        <img src="reclea14.png" alt="Profile Picture">
+        <img src="/static/reclea14.png" alt="Profile Picture">
     </a>
 
     <div id="userName">
@@ -87,13 +87,28 @@
                 <i class="fab fa-instagram">&nbsp;</i>Instagram
             </a>
         </div>
+        <div>
+            <a class="link" href="https://wa.me/1234567890" target="_blank" id="whatsappLink">
+                <i class="fab fa-whatsapp">&nbsp;</i>WhatsApp
+            </a>
+        </div>
+        <div>
+            <a class="link" href="https://www.tiktok.com/@recleabrick?lang=en" target="_blank" id="tiktokLink">
+                <i class="fab fa-whatsapp">&nbsp;</i>Tiktok
+            </a>
+        </div>
+        <div>
+            <a class="link" href="https://www.youtube.com/@RecleaBrick" target="_blank" id="youtubeLink">
+                <i class="fab fa-whatsapp">&nbsp;</i>Youtube
+            </a>
+        </div>
     </div>
     <script>
-        function posting(url) {
+        function posting(url, platform) {
             $.ajax({
                 type: 'POST',
                 url: '/link',
-                data: { instagram_give: '1' },
+                data: { platform: platform },
                 success: function(response) {
                     console.log(response['msg']);
                     window.location.href = url;  // Redirect to the link URL after AJAX success
@@ -106,9 +121,24 @@
 
         $(document).ready(function() {
             $('#instagramLink').click(function(event) {
-                event.preventDefault();  // Prevent the default action
-                const url = $(this).attr('href');  // Store the link URL
-                posting(url);  // Pass the URL to the posting function
+                event.preventDefault();  
+                const url = $(this).attr('href');  
+                posting(url, 'instagram');  
+            });
+            $('#whatsappLink').click(function(event) {
+                event.preventDefault();  
+                const url = $(this).attr('href');  
+                posting(url, 'whatsapp');  
+            });
+            $('#tiktokLink').click(function(event) {
+                event.preventDefault();  
+                const url = $(this).attr('href');  
+                posting(url, 'tiktok');  
+            });
+            $('#youtubeLink').click(function(event) {
+                event.preventDefault();  
+                const url = $(this).attr('href');  
+                posting(url, 'youtube');  
             });
         });
     </script>

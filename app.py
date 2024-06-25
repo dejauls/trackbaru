@@ -14,12 +14,12 @@ def home():
 @app.route("/link", methods=["POST"])
 def link_post():
     try:
-        instagram_receive = request.form['instagram_give']
-        print(f"Received data: {instagram_receive}") 
+        platform = request.form['platform']
+        print(f"Received platform: {platform}") 
         
         current_time = datetime.now().strftime('%Y-%m-%d')  
         doc = {
-            'instagram': instagram_receive,
+            'platform': platform,
             'timestamp': current_time  
         }
 
@@ -30,6 +30,67 @@ def link_post():
     except Exception as e:
         print(f"Error: {e}")  # Debug: Print any error that occurs
         return jsonify({'msg': 'An error occurred', 'error': str(e)}), 500
+
+@app.route('/view_data', methods=['GET'])
+def view_data():
+    try:
+        date = request.args.get('date')
+        query = {}
+        if date:
+            query['timestamp'] = date
+        
+        data = list(db.link.find(query, {'_id': 0, 'platform': 1, 'timestamp': 1}))
+        return render_template('data.html', data=data)
+    except Exception as e:
+        print(f"Error: {e}")  # Debug: Print any error that occurs
+        return jsonify({'msg': 'An error occurred', 'error': str(e)}), 500
+
+
+# @app.route("/link", methods=["POST"])
+# def link_post():
+#     try:
+#         instagram_receive = request.form['instagram_give']
+#         print(f"Received data: {instagram_receive}") 
+        
+#         current_time = datetime.now().strftime('%Y-%m-%d')  
+#         doc = {
+#             'instagram': instagram_receive,
+#             'timestamp': current_time  
+#         }
+
+#         result = db.link.insert_one(doc)
+#         print(f"Document inserted with id: {result.inserted_id}")  # Debug: Print insertion result
+
+#         return jsonify({'msg': 'POST request received!'})
+#     except Exception as e:
+#         print(f"Error: {e}")  # Debug: Print any error that occurs
+#         return jsonify({'msg': 'An error occurred', 'error': str(e)}), 500
+    
+
+# @app.route('/view_data', methods=['GET'])
+# def view_data():
+#     try:
+#         date = request.args.get('date')
+#         query = {}
+#         if date:
+#             query['timestamp'] = date
+        
+#         data = list(db.link.find(query, {'_id': 0, 'instagram': 1, 'timestamp': 1}))
+#         return render_template('data.html', data=data)
+#     except Exception as e:
+#         print(f"Error: {e}")  # Debug: Print any error that occurs
+#         return jsonify({'msg': 'An error occurred', 'error': str(e)}), 500    
+
+# @app.route('/view_data')
+# def view_data():
+#     try:
+  
+#         data = list(db.link.find({}, {'_id': 0, 'instagram': 1, 'timestamp': 1}))
+#         return render_template('data.html', data=data)
+#     except Exception as e:
+#         print(f"Error: {e}")  
+#         return jsonify({'msg': 'An error occurred', 'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
