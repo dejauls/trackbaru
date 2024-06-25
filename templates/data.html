@@ -22,66 +22,119 @@
 
 <body>
     <div class="custom-container">
-        <h1>Data  </h1>
+        <h1>Data</h1>
         <form method="GET" action="/view_data">
             <label for="date">Masukkan tanggal:</label>
             <input type="date" id="date" name="date" required>
             <button type="submit">Search</button>
         </form>
         <div class="chart-container">
-            <canvas id="myChart"></canvas>
+            <h2 class="chart-title">Berikut data bulanan</h2>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h2 class="chart-title">Berikut data mingguan</h2>
+            <canvas id="weeklyChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h2 class="chart-title">Berikut data harian</h2>
+            <canvas id="dailyChart"></canvas>
         </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const data = {{ data | tojson
-        }};
-        const instagramCount = data.filter(item => item.platform === 'instagram').length;
-        const whatsappCount = data.filter(item => item.platform === 'whatsapp').length;
-        const tiktokCount = data.filter(item => item.platform === 'tiktok').length;
-        const youtubeCount = data.filter(item => item.platform === 'youtube').length;
-        const artikelCount = data.filter(item => item.platform === 'artikel').length;
-        const beritaCount = data.filter(item => item.platform === 'berita').length;
-        const websiteCount = data.filter(item => item.platform === 'website').length;
+            fetch('/data_month')
+                .then(response => response.json())
+                .then(data => {
+                    const platformCounts = getPlatformCounts(data);
+                    renderChart('monthlyChart', platformCounts);
+                })
+                .catch(error => console.error('Error:', error));
 
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Instagram', 'WhatsApp', 'TikTok', 'YouTube', 'Artikel', 'Berita', 'Website'],
-                datasets: [{
-                    label: '# of Posts',
-                    data: [instagramCount, whatsappCount, tiktokCount, youtubeCount, artikelCount, beritaCount, websiteCount],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+            fetch('/data_week')
+                .then(response => response.json())
+                .then(data => {
+                    const platformCounts = getPlatformCounts(data);
+                    renderChart('weeklyChart', platformCounts);
+                })
+                .catch(error => console.error('Error:', error));
+
+            fetch('/data_today')
+                .then(response => response.json())
+                .then(data => {
+                    const platformCounts = getPlatformCounts(data);
+                    renderChart('dailyChart', platformCounts);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function getPlatformCounts(data) {
+            const counts = {
+                instagram: 0,
+                whatsapp: 0,
+                tiktok: 0,
+                youtube: 0,
+                artikel: 0,
+                berita: 0,
+                website: 0
+            };
+            data.forEach(item => {
+                if (counts[item.platform] !== undefined) {
+                    counts[item.platform]++;
+                }
+            });
+            return counts;
+        }
+
+        function renderChart(chartId, platformCounts) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Instagram', 'WhatsApp', 'TikTok', 'YouTube', 'Artikel', 'Berita', 'Website'],
+                    datasets: [{
+                        label: '# of Posts',
+                        data: [
+                            platformCounts.instagram,
+                            platformCounts.whatsapp,
+                            platformCounts.tiktok,
+                            platformCounts.youtube,
+                            platformCounts.artikel,
+                            platformCounts.berita,
+                            platformCounts.website
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-        });
+            });
+        }
     </script>
 
     <!-- <script>
